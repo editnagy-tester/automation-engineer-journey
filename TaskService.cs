@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace TaskManager
 {
@@ -26,12 +27,9 @@ namespace TaskManager
             tasks.RemoveAll(t => t.Id == id);
         }
 
-        public void GetAllTasks()
+        public List<TaskItem> GetAllTasks()
         {
-            foreach (var task in tasks)
-            {
-                Console.WriteLine($"ID: {task.Id}, Title: {task.Title}, Completed: {task.IsCompleted}");
-            }
+            return tasks;
         }
 
     }
