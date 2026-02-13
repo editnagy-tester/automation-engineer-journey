@@ -4,11 +4,11 @@ using System.Text;
 
 namespace TaskManager
 {
-    internal class TaskItem
+    public class TaskItem
     {
-        int Id { get; set; }
-        string Title { get; set; }
-        bool IsCompleted { get; set; } = false;
+        public int Id { get; set; }
+        public string Title { get; set; }
+        public bool IsCompleted { get; set; } = false;
 
 
 
