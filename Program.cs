@@ -1,4 +1,5 @@
 ﻿// See https://aka.ms/new-console-template for more information
+using System.Linq.Expressions;
 using TaskManager;
 
 var taskService = new TaskService();
@@ -17,15 +18,24 @@ while (running)
     {
         case "1":
             Console.WriteLine("Enter Task Title to add:");
-            string title = Console.ReadLine();
-            if (!string.IsNullOrWhiteSpace(title))
+
+            var result = taskService.AddTask(Console.ReadLine());
+
+            switch (result)
             {
-                taskService.AddTask(title);
+                case AddTaskResult.Success:
+                    Console.WriteLine("Task added succesfully!");
+                    break;
+                case AddTaskResult.EmptyTitle:
+                    Console.WriteLine("Please type a valid title!");
+                    break;
+                case AddTaskResult.DuplicateTitle:
+                    Console.WriteLine("Task already exists with this title!");
+                    break;
+                default:
+                    break;
             }
-            else
-            {
-                Console.WriteLine("Invalid Title");
-            }
+
             break;
         case "2":
             var tasks = taskService.GetAllTasks();
@@ -36,10 +46,14 @@ while (running)
             break;
         case "3":
             Console.WriteLine("Enter Task ID to remove:");
-            string id = Console.ReadLine();
-            if (int.TryParse(id, out int idnumber))
+            if (int.TryParse(Console.ReadLine(), out int idnumber))
             {
-                taskService.RemoveTask(idnumber);
+                bool removed = taskService.RemoveTask(idnumber);
+                if (removed)
+                    Console.WriteLine("Task removed successfully!");
+                else
+                    Console.WriteLine("Task not found!");
+
             }
             else
             {
