@@ -4,6 +4,7 @@ using System.Linq.Expressions;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Text.Json;
 
 namespace TaskManager
 {
@@ -17,6 +18,7 @@ namespace TaskManager
     {
         
         private List<TaskItem> tasks;
+        private int _nextId = 1;
 
         public TaskService()
         { 
@@ -34,8 +36,7 @@ namespace TaskManager
                 return AddTaskResult.DuplicateTitle;
             }
 
-            int id = tasks.Count + 1;
-            TaskItem newTask = new TaskItem(id, title);
+            TaskItem newTask = new TaskItem(_nextId++, title);
             tasks.Add(newTask);
             return AddTaskResult.Success;
         }
@@ -54,6 +55,53 @@ namespace TaskManager
         public List<TaskItem> GetAllTasks()
         {
             return tasks;
+        }
+
+        public void SaveToFile(string path)
+        {
+            string json = JsonSerializer.Serialize(tasks);
+            File.WriteAllText(path, json); //oberwrites existing file, or create a new one
+        }
+
+        public void LoadFromFile(string path) 
+        {
+            if (File.Exists(path))
+            {
+                string taskstext = File.ReadAllText(path);
+                if (string.IsNullOrWhiteSpace(taskstext)) //for empty file
+                {
+                    _nextId = 1;
+                    return;
+                }
+                List<TaskItem> deserializedTasks;
+                try
+                {
+                    deserializedTasks = JsonSerializer.Deserialize<List<TaskItem>>(taskstext);
+                    if (deserializedTasks != null)
+                    {
+                        tasks = deserializedTasks;
+                        if (tasks.Count > 0) //in case json file has empty list []
+                        {
+                            _nextId = tasks.Max(t => t.Id) + 1;
+                        }
+                        else
+                        {
+                            _nextId = 1;
+                        }
+                    }
+                    else
+                    {
+                        _nextId = 1;
+                    }
+                }
+                catch (Exception)
+                {
+                    _nextId = 1;
+                }
+                
+                
+            }
+
         }
 
     }

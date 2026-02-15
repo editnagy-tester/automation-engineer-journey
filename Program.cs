@@ -1,9 +1,17 @@
 ﻿// See https://aka.ms/new-console-template for more information
 using System.Linq.Expressions;
+using System.Text.Json;
+using System.Threading.Tasks;
 using TaskManager;
 
 var taskService = new TaskService();
+string path = "tasks.json";
+
+taskService.LoadFromFile(path);
+
+
 bool running = true;
+
 
 while (running)
 {
@@ -62,6 +70,7 @@ while (running)
 
             break;
         case "4":
+            taskService.SaveToFile(path);
             running = false;
             break;
         default:
