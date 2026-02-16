@@ -14,7 +14,7 @@ namespace TaskManager
         EmptyTitle,
         DuplicateTitle
     }
-    internal class TaskService
+    public class TaskService
     {
         
         private List<TaskItem> tasks;
@@ -60,7 +60,7 @@ namespace TaskManager
         public void SaveToFile(string path)
         {
             string json = JsonSerializer.Serialize(tasks);
-            File.WriteAllText(path, json); //oberwrites existing file, or create a new one
+            File.WriteAllText(path, json); //overwrites existing file, or create a new one
         }
 
         public void LoadFromFile(string path) 
@@ -70,35 +70,27 @@ namespace TaskManager
                 string taskstext = File.ReadAllText(path);
                 if (string.IsNullOrWhiteSpace(taskstext)) //for empty file
                 {
+                    tasks = new List<TaskItem>();
                     _nextId = 1;
                     return;
                 }
-                List<TaskItem> deserializedTasks;
+
                 try
                 {
-                    deserializedTasks = JsonSerializer.Deserialize<List<TaskItem>>(taskstext);
-                    if (deserializedTasks != null)
-                    {
-                        tasks = deserializedTasks;
-                        if (tasks.Count > 0) //in case json file has empty list []
-                        {
-                            _nextId = tasks.Max(t => t.Id) + 1;
-                        }
-                        else
-                        {
-                            _nextId = 1;
-                        }
-                    }
-                    else
-                    {
-                        _nextId = 1;
-                    }
+                    var deserializedTasks = JsonSerializer.Deserialize<List<TaskItem>>(taskstext);
+
+                    tasks = deserializedTasks ?? new List<TaskItem>();
+
+                    _nextId = tasks.Count > 0 //in case json file has empty list []
+                        ? tasks.Max(t => t.Id) + 1
+                        : 1;
+                    
                 }
-                catch (Exception)
+                catch (JsonException)
                 {
+                    tasks = new List<TaskItem>();
                     _nextId = 1;
-                }
-                
+                }  
                 
             }
 
