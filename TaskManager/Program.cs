@@ -4,7 +4,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using TaskManager;
 
-var taskService = new TaskService();
+ITaskService taskService = new TaskService();
 string path = "tasks.json";
 
 taskService.LoadFromFile(path);

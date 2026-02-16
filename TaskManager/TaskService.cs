@@ -14,7 +14,7 @@ namespace TaskManager
         EmptyTitle,
         DuplicateTitle
     }
-    public class TaskService
+    public class TaskService : ITaskService
     {
         
         private List<TaskItem> tasks;
